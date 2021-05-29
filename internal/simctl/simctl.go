@@ -175,3 +175,10 @@ func (c *SimulationController) ReplaceBall(x, y float32) {
 	)
 	c.ballReplaceHandler.placeBall(targetPos)
 }
+
+func (c *SimulationController) ReplaceRobot(color int32, id uint32, x, y float32) {
+	targetPos := geom.NewVector2Float32(
+		x, y,
+	)
+	c.ballReplaceHandler.placeRobot(color, id, targetPos)
+}

@@ -96,3 +96,38 @@ func (r *BallReplaceHandler) placeBall(ballPos *geom.Vector2) {
 		r.lastTimePlacedBall = time.Now()
 	}
 }
+
+func (r *BallReplaceHandler) placeRobot(color int32, id uint32, robotPos *geom.Vector2) {
+
+	zero := float32(0)
+	t := true
+	c := referee.Team(color)
+	tRobot := TeleportRobot{
+		X:           robotPos.X,
+		Y:           robotPos.Y,
+		Orientation: &zero,
+		VX:          &zero,
+		VY:          &zero,
+		VAngular:    &zero,
+		Present:     &t,
+		Id: &referee.RobotId{
+			Id:   &id,
+			Team: &c,
+		},
+	}
+	var tRobotArray []*TeleportRobot
+	tRobotArray = append(tRobotArray, &tRobot)
+
+	command := SimulatorCommand{
+		Control: &SimulatorControl{
+			TeleportRobot: tRobotArray,
+		},
+	}
+
+	if data, err := proto.Marshal(&command); err != nil {
+		log.Println("Could not marshal command: ", err)
+	} else {
+		r.c.simControlClient.Send(data)
+		r.lastTimePlacedBall = time.Now()
+	}
+}
