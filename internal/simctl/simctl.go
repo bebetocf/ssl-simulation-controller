@@ -1,15 +1,17 @@
 package simctl
 
 import (
+	"log"
+	"math"
+	"net"
+	"sync"
+
+	"github.com/RoboCup-SSL/ssl-simulation-controller/internal/geom"
 	"github.com/RoboCup-SSL/ssl-simulation-controller/internal/referee"
 	"github.com/RoboCup-SSL/ssl-simulation-controller/internal/sslnet"
 	"github.com/RoboCup-SSL/ssl-simulation-controller/internal/tracker"
 	"github.com/RoboCup-SSL/ssl-simulation-controller/internal/vision"
 	"github.com/golang/protobuf/proto"
-	"log"
-	"math"
-	"net"
-	"sync"
 )
 
 type SimulationController struct {
@@ -165,4 +167,11 @@ func (c *SimulationController) Stop() {
 		c.simControlClient.Stop()
 		c.simControlClient = nil
 	}
+}
+
+func (c *SimulationController) ReplaceBall(x, y float32) {
+	targetPos := geom.NewVector2Float32(
+		x/1000, y/1000,
+	)
+	c.ballReplaceHandler.placeBall(targetPos)
 }

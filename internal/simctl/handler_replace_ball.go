@@ -1,11 +1,12 @@
 package simctl
 
 import (
+	"log"
+	"time"
+
 	"github.com/RoboCup-SSL/ssl-simulation-controller/internal/geom"
 	"github.com/RoboCup-SSL/ssl-simulation-controller/internal/referee"
 	"github.com/golang/protobuf/proto"
-	"log"
-	"time"
 )
 
 type BallReplaceHandler struct {
