@@ -17,29 +17,50 @@ var refereeAddress = flag.String("refereeAddress", "224.5.23.1:10003", "The addr
 var simControlPort = flag.String("simControlPort", "10300", "The port to which simulation control packets are send")
 var robotSpecConfig = flag.String("robotSpecConfig", "config/robot-specs.yaml", "The robot specs config file")
 
+func printHelp() {
+	log.Println()
+	log.Println("----------------------")
+	log.Println("How to use: (All positions in m)")
+	log.Println("Replace Ball: b {x} {y}")
+	log.Println("Replace Robot: r {y|b} {id} {x} {y}")
+	log.Println("Exit: e|q")
+	log.Println("----------------------")
+	log.Println()
+}
+
 func main() {
-	log.Println("Baguncinha")
+	printHelp()
 	flag.Parse()
 	ctl := simctl.NewSimulationController(*visionAddress, *refereeAddress, *trackerAddress, *simControlPort, *robotSpecConfig)
 	ctl.Start()
-	log.Println("Done")
 
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		text, _ := reader.ReadString('\n')
 		// convert CRLF to LF
 		text = strings.Replace(text, "\n", "", -1)
-		if strings.Compare("e", text) == 0 {
+		if strings.Compare("e", text) == 0 ||
+			strings.Compare("q", text) == 0 {
 			ctl.Stop()
 			break
 		}
 
 		words := strings.Fields(text)
-		if strings.Compare("b", words[0]) == 0 {
+		if len(words) < 1 {
+			printHelp()
+		} else if strings.Compare("b", words[0]) == 0 {
+			if len(words) < 3 {
+				printHelp()
+				continue
+			}
 			x, _ := strconv.ParseFloat(words[1], 32)
 			y, _ := strconv.ParseFloat(words[2], 32)
 			ctl.ReplaceBall(float32(x), float32(y))
 		} else if strings.Compare("r", words[0]) == 0 {
+			if len(words) < 5 {
+				printHelp()
+				continue
+			}
 			color := 0
 			if strings.Compare("y", words[1]) == 0 {
 				color = 1
@@ -53,6 +74,8 @@ func main() {
 			y, _ := strconv.ParseFloat(words[4], 32)
 			ctl.ReplaceRobot(int32(color), uint32(id), float32(x), float32(y))
 			// ctl.ReplaceBall(float32(x), float32(y))
+		} else {
+			printHelp()
 		}
 	}
 }
