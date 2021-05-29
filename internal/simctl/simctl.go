@@ -171,7 +171,7 @@ func (c *SimulationController) Stop() {
 
 func (c *SimulationController) ReplaceBall(x, y float32) {
 	targetPos := geom.NewVector2Float32(
-		x/1000, y/1000,
+		x, y,
 	)
 	c.ballReplaceHandler.placeBall(targetPos)
 }
